@@ -1,6 +1,6 @@
 # Hopping-Timer
 
-Hopping-Timer: a generic framework for data stream mining over sliding windows
+Hopping-Timer: a generic framework for basic estimation of data streams in hopping windows.
 
 This repostory contains all the codes related to the manuscript submitted to VLDB2021.
 
