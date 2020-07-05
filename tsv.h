@@ -23,7 +23,7 @@ public:
 		for (int i = 0; i < size; i++){
 			group[i] = -1;
 		}
-		cout << "create TSV, tableSize " << size << ", memory " << _size << endl;
+		cout << "create TSV, t = " << t << ", tableSize " << size << ", memory " << _size << endl;
 	}
 
 	~TSV(){
@@ -34,12 +34,14 @@ public:
 	{
 		uint32_t s = hash[0].run((char*)&id, sizeof(uint32_t)) % size;
 		group[s] = time;
+		//cout << "insert time " << time << endl;
 	}
 
 	bool query(uint32_t id, int time)
 	{
 		//cout << "query time " << time << endl;
 		uint32_t s = hash[0].run((char*)&id, sizeof(uint32_t)) % size;
+		//cout << "time: " << time << " group[s]: " << group[s] << endl;
 		if (time - group[s] < t && group[s] != -1)
 			return 1;
 		return 0;
@@ -53,6 +55,7 @@ public:
 			if (!query(i, time))
 				empty++;
 		}
+		//cout << "empty: " << empty << endl;
 		return int(-log(double(empty) / double(size))*double(size));
 	}
 };

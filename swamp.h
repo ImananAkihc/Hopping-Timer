@@ -18,10 +18,10 @@ public:
 	int curr;
 	int s;
 	int distinctItems;
-	Swamp(int _hashnum, int _interval, int _size, BOBHash32* _hash)
+	Swamp(int _hashnum, double _interval, int _size, BOBHash32* _hash)
 	{
 		
-		hashnum = _hashnum;
+		hashnum = 1;
 		interval = 10 * _interval; //每秒有10个元素插入
 		hash = _hash;
 
@@ -29,8 +29,8 @@ public:
 		for (int i = 0; i < hashnum; i++)
 			Window[i] = new uint32_t[interval];
 
-		tableSize = _size - int(interval * hashnum * 1.5); //设counter都是8位的，再设window里面每个指纹是12位，window占去的内存要从table大小中减去
-		if (tableSize < 0){
+		tableSize = _size - int(interval * hashnum * 2); //设counter都是8位的，再设window里面每个指纹是16位，window占去的内存要从table大小中减去
+		if (tableSize <= 0){
 			cout << "size error" << endl;
 			system("pause");
 		}

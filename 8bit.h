@@ -9,7 +9,7 @@ using namespace std;
 
 #define GROUP 0
 #define HLLBUCKETS 128
-#define speed 0
+#define threshold 0.1
 
 int countFirst1(int n){
 	if (n == 0)
@@ -44,7 +44,7 @@ public:
 		hash = _hash;
 		timestamp = new int[size];
 		counters = new int[cells];
-
+		srand((time(0)));
 		for (int i = 0; i < size; i++)
 			timestamp[i] = -1;
 		memset(counters, 0, cells * sizeof(int));
@@ -70,7 +70,6 @@ public:
 
 	bool CheckAndClear(int index, double time, bool ifClear){
 		int label = int(time / t) % cells;
-
 		if (!ifClear)
 			return CheckSameWindow(timestamp[index], label);
 		int head = (index / NCC) * NCC;
@@ -80,7 +79,6 @@ public:
 				timestamp[y] = -1;
 			}
 		}
-
 		return false;
 	}
 	//check the whether the timestamp[index] is avaliable and clear the bits nearby
@@ -92,41 +90,38 @@ public:
 		for (int i = 0; i<hashnum; i++)
 		{
 			uint32_t s = hash[i].run((char*)&id, sizeof(uint32_t)) % size;
-			if (!speed){
-				if (min == cells)
+			//cout << "insert hash " << i << " result " << s << endl;
+			if (min == cells)
+				min = timestamp[s];
+			else if (!CheckSameWindow(timestamp[s], label))
+				min = -1;
+			else{
+				int oldgap = (label + cells - min) % cells;
+				int newgap = (label + cells - timestamp[s]) % cells;
+				if (newgap > oldgap && min != -1)
 					min = timestamp[s];
-				else if (!CheckSameWindow(timestamp[s], label))
-					min = -1;
-				else{
-					int oldgap = (label + cells - min) % cells;
-					int newgap = (label + cells - timestamp[s]) % cells;
-					if (newgap > oldgap && min != -1)
-						min = timestamp[s];
-				}
 			}
 			timestamp[s] = label;
 			CheckAndClear(s, time, 1);
 		}
 		//cout << hashnum << ": min " << min << " label " << label << endl;
-		if (!speed){
-			int begin, end;
-			begin = label;
-			end = (label + HALF) % cells;
-			if (CheckSameWindow(min, label)){
-				begin = (min + HALF) % cells;
-			}
-			int cnt = 0;
-			//cout << "begin: " << begin << " end: " << end << endl;
-			while (begin != end){
-				counters[begin]++;
-				begin = (begin + 1) % cells;
-				cnt++;
-			}
+		int begin, end;
+		begin = label;
+		end = (label + HALF) % cells;
+		if (CheckSameWindow(min, label)){
+			begin = (min + HALF) % cells;
+		}
+		int cnt = 0;
+		//cout << "begin: " << begin << " end: " << end << endl;
+		while (begin != end){
+			counters[begin]++;
+			begin = (begin + 1) % cells;
+			cnt++;
+		}
 
-			//cout << "+" << cnt << endl;
-			for (int i = 1; i < HALF; i++){
-				counters[((label + cells) - i) % cells] = 0;
-			}
+		//cout << "+" << cnt << endl;
+		for (int i = 1; i < HALF; i++){
+			counters[((label + cells) - i) % cells] = 0;
 		}
 	}
 

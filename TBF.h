@@ -19,7 +19,7 @@ public:
 	{
 		hashnum = _hashnum;
 		t = _t * 10 + 1;
-		size = _size / 2;
+		size = _size * 4 / 9;
 		hash = _hash;
 		group = new int[size];
 		for (int i = 0; i < size; i++){

@@ -21,7 +21,7 @@ public:
 	{
 		C = 15;
 		size = _size * 2;
-		k = C * size / 10000;
+		k = C * size / 65536;
 		z = size;
 		hash = _hash;
 		group = new int[size];
