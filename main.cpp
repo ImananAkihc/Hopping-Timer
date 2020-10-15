@@ -26,7 +26,7 @@ using namespace std;
 #define Size 131072 //Size of bf = 128KB
 #define Interval 6553.6 // propose that every second, 10 items arrived. 10000 elements in the window
 #define TimeInterval 0.1 // Used for time based
-#define DataSet 0 // 0=CAIDA 1=DISTINCT 2=TIME 3=WEBPAGE 4=CAMPUS
+#define DataSet 4 // 0=CAIDA 1=DISTINCT 2=TIME 3=WEBPAGE 4=CAMPUS
 
 
 BOBHash32 hashes[1000];
@@ -1074,61 +1074,67 @@ void CompareDistinctElementsWithOther(int flowSize){
 	InitDataSet(flow, flowSize);
 
 	for (int m = 0; m <= 30; m += 2){
-		T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16 - 512, 8, hashes);
-		T_8bit t_8bitBM(8, 1, Interval, (Size * (2 + m)) / 16, 64, hashes);
-		Swamp swamp(HashNum, Interval, (Size * (18 + m)) / 16, hashes);
-		TSV tsv(Interval, (Size * (2 + m)) / 16, hashes);
-		CVS cvs(Interval, (Size * (2 + m)) / 16, hashes);
-		int r = 0;
 		double t_8bitError = 0, swamp_Error = 0, TSV_Error = 0, CVS_Error = 0, t_8bitBMError = 0;
-		set<uint32_t> unique;
-		int gap = flow.size() / 8;
-		gap = (gap / int(Interval * 10 / pow(2, BitLength - 1))) * int(Interval * 10 / pow(2, BitLength - 1));
-		cout << "test every " << gap << " insertion" << endl;
-		for (int i = 0; i < flow.size(); i++)
-		{
-			now = double(i) / 10;
-			t_8bit.insert(flow[i].first, now);
-			t_8bitBM.insert(flow[i].first, now);
-			swamp.insert(flow[i].first);
-			tsv.insert(flow[i].first, i);
-			cvs.insert(flow[i].first);
-			
-			if ((i + 1) % gap == 0){
-				r++;
-				unique.clear();
-				for (int j = i; j > max(0,i - int(Interval * 10)); j--)
-					unique.insert(flow[j].first);
-				cout << unique.size() << " distinct items in recent " << Interval * 10 << " items" << endl;
+		for (int aver = 0; aver < 8; aver++){
+			InitBOBHash(100);
+			T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16 - 512, 8, hashes);
+			T_8bit t_8bitBM(8, 1, Interval, (Size * (2 + m)) / 16, 64, hashes);
+			Swamp swamp(HashNum, Interval, (Size * (18 + m)) / 16, hashes);
+			TSV tsv(Interval, (Size * (2 + m)) / 16, hashes);
+			CVS cvs(Interval, (Size * (2 + m)) / 16, hashes);
+			int r = 0;
+			set<uint32_t> unique;
+			int gap = flow.size() / 8;
+			gap = (gap / int(Interval * 10 / pow(2, BitLength - 1))) * int(Interval * 10 / pow(2, BitLength - 1));
+			cout << "test every " << gap << " insertion" << endl;
+			for (int i = 0; i < flow.size(); i++)
+			{
+				now = double(i) / 10;
+				t_8bit.insert(flow[i].first, now);
+				t_8bitBM.insert(flow[i].first, now);
+				swamp.insert(flow[i].first);
+				tsv.insert(flow[i].first, i);
+				cvs.insert(flow[i].first);
 
-				t_8bitError += abs(double(unique.size()) - double(t_8bit.getDistinctItems(now))) / (unique.size() * 1.0);
-				//cout << t_8bit.getDistinctItems(now) << endl;
-				t_8bitBMError += abs(double(unique.size()) - double(t_8bitBM.countflow(now))) / (unique.size() * 1.0);
-				//cout << t_8bitBM.countflow(now) << endl;
-				swamp_Error += abs(double(unique.size()) - double(swamp.getDistinctItems())) / (unique.size() * 1.0);
-				//cout << swamp.getDistinctItems() << endl;
-				TSV_Error += abs(double(unique.size()) - double(tsv.countflow(i))) / (unique.size() * 1.0);
-				//cout << tsv.countflow(i) << endl;
-				CVS_Error += abs(double(unique.size()) - double(cvs.countflow())) / (unique.size() * 1.0);
-				//cout << cvs.countflow() << endl;
+				if ((i + 1) % gap == 0){
+					r++;
+					unique.clear();
+					for (int j = i; j > max(0, i - int(Interval * 10)); j--)
+						unique.insert(flow[j].first);
+					cout << unique.size() << " distinct items in recent " << Interval * 10 << " items" << endl;
+
+					t_8bitError += abs(double(unique.size()) - double(t_8bit.getDistinctItems(now))) / (unique.size() * 1.0);
+					cout << abs(double(unique.size()) - double(t_8bit.getDistinctItems(now))) / (unique.size() * 1.0) << endl;
+					t_8bitBMError += abs(double(unique.size()) - double(t_8bitBM.countflow(now))) / (unique.size() * 1.0);
+					cout << abs(double(unique.size()) - double(t_8bitBM.countflow(now))) / (unique.size() * 1.0) << endl;
+					swamp_Error += abs(double(unique.size()) - double(swamp.getDistinctItems())) / (unique.size() * 1.0);
+					cout << abs(double(unique.size()) - double(swamp.getDistinctItems())) / (unique.size() * 1.0) << endl;
+					TSV_Error += abs(double(unique.size()) - double(tsv.countflow(i))) / (unique.size() * 1.0);
+					cout << abs(double(unique.size()) - double(tsv.countflow(i))) / (unique.size() * 1.0) << endl;
+					CVS_Error += abs(double(unique.size()) - double(cvs.countflow())) / (unique.size() * 1.0);
+					cout << abs(double(unique.size()) - double(cvs.countflow())) / (unique.size() * 1.0) << endl;
+				}
 			}
+			cout << "average of " << r << " times" << endl;
+			if (r != 8)
+				system("pause");
 		}
-		cout << "average of " << r << " times" << endl;
+		
 
-		fp << t_8bitError / r << " ";
-		cout << "the RE of 8bit " << t_8bitError / r << " " << endl;
+		fp << t_8bitError / 64 << " ";
+		cout << "the RE of 8bit " << t_8bitError / 64 << " " << endl;
 
-		fp << t_8bitBMError / r << " ";
-		cout << "the RE of 8bitBM " << t_8bitBMError / r << " " << endl;
+		fp << t_8bitBMError / 64 << " ";
+		cout << "the RE of 8bitBM " << t_8bitBMError / 64 << " " << endl;
 
-		fp << swamp_Error / r << " ";
-		cout << "the RE of swamp: " << swamp_Error / r << " " << endl;
+		fp << swamp_Error / 64 << " ";
+		cout << "the RE of swamp: " << swamp_Error / 64 << " " << endl;
 
-		fp << TSV_Error / r << " ";
-		cout << "the RE of TSV: " << TSV_Error / r << " " << endl;
+		fp << TSV_Error / 64 << " ";
+		cout << "the RE of TSV: " << TSV_Error / 64 << " " << endl;
 
-		fp << CVS_Error / r << endl;
-		cout << "the RE of CVS: " << CVS_Error / r << " " << endl;
+		fp << CVS_Error / 64 << endl;
+		cout << "the RE of CVS: " << CVS_Error / 64 << " " << endl;
 
 	}
 }
@@ -1306,9 +1312,9 @@ void CompareNCC(int flowSize, int querySize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	for (int size = Size; size <= Size * 2; size += Size / 8){
-		T_8bit t_5NCC(8, 8, Interval, size, 4, hashes);
-		T_8bit t_10NCC(8, 8, Interval, size, 6, hashes);
+	for (int size = Size / 8; size <= Size; size += Size / 8){
+		T_8bit t_5NCC(8, 8, Interval, size, 2, hashes);
+		T_8bit t_10NCC(8, 8, Interval, size, 4, hashes);
 		T_8bit t_20NCC(8, 8, Interval, size, 8, hashes);
 		T_8bit t_ONCC(8, 8, Interval, size, 32, hashes);
 		set<uint32_t> unique;
@@ -1403,9 +1409,9 @@ void CompareNCCDistinct(int flowSize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	for (int size = Size; size <= Size * 2; size += Size / 8){
-		T_8bit t_5NCC(8, 8, Interval, size, 4, hashes);
-		T_8bit t_10NCC(8, 8, Interval, size, 6, hashes);
+	for (int size = Size / 8; size <= Size; size += Size / 8){
+		T_8bit t_5NCC(8, 8, Interval, size, 2, hashes);
+		T_8bit t_10NCC(8, 8, Interval, size, 4, hashes);
 		T_8bit t_20NCC(8, 8, Interval, size, 8, hashes);
 		T_8bit t_ONCC(8, 8, Interval, size, 32, hashes);
 		set<uint32_t> unique;
@@ -1461,9 +1467,9 @@ void CompareNCCDistinctBM(int flowSize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	for (int size = Size / 32; size <= Size / 16; size += Size / 256){
-		T_8bit t_5NCC(8, 1, Interval, size, 4, hashes);
-		T_8bit t_10NCC(8, 1, Interval, size, 6, hashes);
+	for (int size = Size / 32; size <= Size / 8; size += Size / 64){
+		T_8bit t_5NCC(8, 1, Interval, size, 2, hashes);
+		T_8bit t_10NCC(8, 1, Interval, size, 4, hashes);
 		T_8bit t_20NCC(8, 1, Interval, size, 8, hashes);
 		T_8bit t_ONCC(8, 1, Interval, size, 16, hashes);
 		set<uint32_t> unique;
@@ -1873,7 +1879,7 @@ int main(){
 	//TimeBasedCompareDistinctElements(500000);
 	//TimeBasedCompareBMDistinctElements(500000);
 	//CompareFPRWithOther(120000, QueryNum);
-	//CompareDistinctElementsWithOther(120000);
+	CompareDistinctElementsWithOther(120000);
 	//CompareBits(120000, QueryNum);
 	//CompareBitsDistinct(120000);
 	//CompareBitsDistinctBM(120000);
@@ -1882,7 +1888,7 @@ int main(){
 	//CompareNCCDistinctBM(1200000);
 	//CompareHash(120000, QueryNum);
 	//CompareHashDistinct(120000);
-	CompareSpeedWithOther(100000, QueryNum);
+	//CompareSpeedWithOther(100000, QueryNum);
 	//CompareDistinctSpeedWithOther(100000, QueryNum * 10);
 	system("pause");
 }
