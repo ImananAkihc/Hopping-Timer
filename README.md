@@ -2,7 +2,9 @@
 
 Hopping-Timer: a generic framework for basic estimation of data streams in hopping windows.
 
-This repostory contains all the codes related to the manuscript submitted to VLDB2021.
+Codes of Hopping-Timer are contained in 8bit.h and 8bit.c
+
+This repostory contains all the codes related to the manuscript submitted to ICDE2021.
 
 BOBHash is used as the hash function in the code.
 
