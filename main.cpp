@@ -274,10 +274,10 @@ void TimeBasedCompareFPRwithTime(int flowSize, int querySize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	T_8bit t_64K(8, HashNum, TimeInterval, Size / 2, 4, hashes);
-	T_8bit t_128K(8, HashNum, TimeInterval, Size, 4, hashes);
-	T_8bit t_64KO(8, HashNum, TimeInterval, Size / 2, 4, hashes);
-	T_8bit t_128KO(8, HashNum, TimeInterval, Size, 4, hashes);
+	T_8bit t_64K(8, HashNum, TimeInterval, Size / 2, 8, hashes);
+	T_8bit t_128K(8, HashNum, TimeInterval, Size, 8, hashes);
+	T_8bit t_64KO(8, HashNum, TimeInterval, Size / 2, 8, hashes);
+	T_8bit t_128KO(8, HashNum, TimeInterval, Size, 8, hashes);
 
 	set<uint32_t> unique;
 	double fal, neg, pos;
@@ -995,7 +995,7 @@ void CompareFPRWithOther(int flowSize, int querySize){
 	InitDataSet(flow, flowSize);
 
 	for (int m = 0; m <= 30; m += 2){
-		T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16, 4, hashes);
+		T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16, 8, hashes);
 		Swamp swamp(HashNum, Interval, (Size * (18 + m)) / 16, hashes);
 		TBF tbf(HashNum, Interval, (Size * (2 + m)) / 16, hashes);
 		set<uint32_t> unique;
@@ -1074,7 +1074,7 @@ void CompareDistinctElementsWithOther(int flowSize){
 	InitDataSet(flow, flowSize);
 
 	for (int m = 0; m <= 30; m += 2){
-		T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16 - 512, 4, hashes);
+		T_8bit t_8bit(8, HashNum, Interval, (Size * (2 + m)) / 16 - 512, 8, hashes);
 		T_8bit t_8bitBM(8, 1, Interval, (Size * (2 + m)) / 16, 64, hashes);
 		Swamp swamp(HashNum, Interval, (Size * (18 + m)) / 16, hashes);
 		TSV tsv(Interval, (Size * (2 + m)) / 16, hashes);
@@ -1138,9 +1138,9 @@ void CompareBits(int flowSize, int querySize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 	for (int size = Size / 8; size <= Size; size += Size / 8){
-		T_8bit t_4bit(4, HashNum, Interval, size * 2, 4, hashes);
-		T_8bit t_6bit(6, HashNum, Interval, size * 3 / 2, 4, hashes);
-		T_8bit t_8bit(8, HashNum, Interval, size, 4, hashes);
+		T_8bit t_4bit(4, HashNum, Interval, size * 2, 8, hashes);
+		T_8bit t_6bit(6, HashNum, Interval, size * 3 / 2, 8, hashes);
+		T_8bit t_8bit(8, HashNum, Interval, size, 8, hashes);
 		set<uint32_t> unique;
 		double fal, neg, pos;
 		double t_4FPR = 0, t_6FPR = 0, t_8FPR = 0;
@@ -1217,9 +1217,9 @@ void CompareBitsDistinct(int flowSize){
 	InitDataSet(flow, flowSize);
 
 	for (int size = Size / 8; size <= Size; size += Size / 8){
-		T_8bit t_4(4, HashNum, Interval, size * 2, 4, hashes);
-		T_8bit t_6(6, HashNum, Interval, size * 3 / 2, 4, hashes);
-		T_8bit t_8(8, HashNum, Interval, size, 4, hashes);
+		T_8bit t_4(4, HashNum, Interval, size * 2, 8, hashes);
+		T_8bit t_6(6, HashNum, Interval, size * 3 / 2, 8, hashes);
+		T_8bit t_8(8, HashNum, Interval, size, 8, hashes);
 		set<uint32_t> unique;
 		int r = 0;
 		double t4Error = 0, t6Error = 0, t8Error = 0;
@@ -1262,9 +1262,9 @@ void CompareBitsDistinctBM(int flowSize){
 	InitDataSet(flow, flowSize);
 
 	for (int size = Size / 64; size <= Size / 8; size += Size / 64){
-		T_8bit t_4(4, 1, Interval, size * 2, 4, hashes);
-		T_8bit t_6(6, 1, Interval, size * 3 / 2, 4, hashes);
-		T_8bit t_8(8, 1, Interval, size, 4, hashes);
+		T_8bit t_4(4, 1, Interval, size * 2, 8, hashes);
+		T_8bit t_6(6, 1, Interval, size * 3 / 2, 8, hashes);
+		T_8bit t_8(8, 1, Interval, size, 8, hashes);
 		set<uint32_t> unique;
 		int r = 0;
 		double t4Error = 0, t6Error = 0, t8Error = 0;
@@ -1403,63 +1403,14 @@ void CompareNCCDistinct(int flowSize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	for (int interv = Interval; interv <= (2 * Interval); interv += (Interval / 4)){
-		cout << "interv: " << interv << endl;
-		T_8bit t_5NCC(8, 2, interv, Size/2, 16, hashes);
-		T_8bit t_10NCC(8, 2, interv, Size/2, 32, hashes);
-		T_8bit t_20NCC(8, 2, interv, Size/2, 64, hashes);
+	for (int size = Size; size <= Size * 2; size += Size / 8){
+		T_8bit t_5NCC(8, 8, Interval, size, 4, hashes);
+		T_8bit t_10NCC(8, 8, Interval, size, 6, hashes);
+		T_8bit t_20NCC(8, 8, Interval, size, 8, hashes);
+		T_8bit t_ONCC(8, 8, Interval, size, 32, hashes);
 		set<uint32_t> unique;
 		int r = 0;
-		double t5NCCError = 0, t10NCCError = 0, t20NCCError = 0;
-		int gap = flow.size() / 8;
-		gap = (gap / int(interv * 10 / pow(2, BitLength - 1))) * int(interv * 10 / pow(2, BitLength - 1));
-		cout << "test every " << gap << " insertion" << endl;
-		for (int i = 0; i < flow.size(); i++)
-		{
-			now = double(i) / 10;
-			t_5NCC.insert(flow[i].first, now);
-			t_10NCC.insert(flow[i].first, now);
-			t_20NCC.insert(flow[i].first, now);
-			if ((i + 1) % gap == 0){
-				r++;
-				unique.clear();
-				for (int j = i; j > max(0,i - interv * 10); j--)
-					unique.insert(flow[j].first);
-				cout << unique.size() << " distinct items in recent " << interv * 10 << " items" << endl;
-
-				t5NCCError += abs(double(unique.size()) - double(t_5NCC.getDistinctItems(now))) / (unique.size() * 1.0);
-				cout << t_5NCC.getDistinctItems(now) << endl;
-				t10NCCError += abs(double(unique.size()) - double(t_10NCC.getDistinctItems(now))) / (unique.size() * 1.0);
-				cout << t_10NCC.getDistinctItems(now) << endl;
-				t20NCCError += abs(double(unique.size()) - double(t_20NCC.getDistinctItems(now))) / (unique.size() * 1.0);
-				cout << t_20NCC.getDistinctItems(now) << endl;
-			}
-		}
-		cout << "average of " << r << " times" << endl;
-
-		fp << t5NCCError / r << " ";
-		cout << "the RE of 5: " << t5NCCError / r << " " << endl;
-
-		fp << t10NCCError / r << " ";
-		cout << "the RE of 10: " << t10NCCError / r << " " << endl;
-
-		fp << t20NCCError / r << endl;
-		cout << "the RE of 20: " << t20NCCError / r << " " << endl;
-	}
-}
-
-void CompareNCCDistinctBM(int flowSize){
-	double now = 0;
-	vector<pair<uint32_t, double>> flow;
-	InitDataSet(flow, flowSize);
-
-	for (int size = Size / 2; size <= Size * 2; size += Size / 2){
-		T_8bit t_5NCC(8, 1, Interval, size, 8, hashes);
-		T_8bit t_10NCC(8, 1, Interval, size, 16, hashes);
-		T_8bit t_20NCC(8, 1, Interval, size, 32, hashes);
-		set<uint32_t> unique;
-		int r = 0;
-		double t5NCCError = 0, t10NCCError = 0, t20NCCError = 0;
+		double t5NCCError = 0, t10NCCError = 0, t20NCCError = 0, tONCCError = 0;
 		int gap = flow.size() / 8;
 		gap = (gap / int(Interval * 10 / pow(2, BitLength - 1))) * int(Interval * 10 / pow(2, BitLength - 1));
 		cout << "test every " << gap << " insertion" << endl;
@@ -1469,19 +1420,24 @@ void CompareNCCDistinctBM(int flowSize){
 			t_5NCC.insert(flow[i].first, now);
 			t_10NCC.insert(flow[i].first, now);
 			t_20NCC.insert(flow[i].first, now);
+			t_ONCC.insert(flow[i].first, now);
 			if ((i + 1) % gap == 0){
 				r++;
+				for (int j = 0; j < t_ONCC.size; j += t_ONCC.NCC)
+					t_ONCC.CheckAndClear(j, now, 1);
 				unique.clear();
 				for (int j = i; j > max(0, i - int(Interval * 10)); j--)
 					unique.insert(flow[j].first);
 				cout << unique.size() << " distinct items in recent " << Interval * 10 << " items" << endl;
-				//cout << "r: " << r << endl;
-				t5NCCError += abs(double(unique.size()) - double(t_5NCC.countflow(now))) / (unique.size() * 1.0);
-				//cout << "5: " << abs(double(unique.size()) - double(t_5NCC.countflow(now))) << endl;
-				t10NCCError += abs(double(unique.size()) - double(t_10NCC.countflow(now))) / (unique.size() * 1.0);
-				//cout << "10: " << abs(double(unique.size()) - double(t_10NCC.countflow(now))) << endl;
-				t20NCCError += abs(double(unique.size()) - double(t_20NCC.countflow(now))) / (unique.size() * 1.0);
-				//cout << "20: " << abs(double(unique.size()) - double(t_20NCC.countflow(now))) << endl;
+
+				t5NCCError += abs(double(unique.size()) - double(t_5NCC.getDistinctItems(now))) / (unique.size() * 1.0);
+				cout << t_5NCC.getDistinctItems(now) << endl;
+				t10NCCError += abs(double(unique.size()) - double(t_10NCC.getDistinctItems(now))) / (unique.size() * 1.0);
+				cout << t_10NCC.getDistinctItems(now) << endl;
+				t20NCCError += abs(double(unique.size()) - double(t_20NCC.getDistinctItems(now))) / (unique.size() * 1.0);
+				cout << t_20NCC.getDistinctItems(now) << endl;
+				tONCCError += abs(double(unique.size()) - double(t_ONCC.getDistinctItems(now))) / (unique.size() * 1.0);
+				cout << t_ONCC.getDistinctItems(now) << endl;
 			}
 		}
 		cout << "average of " << r << " times" << endl;
@@ -1492,11 +1448,74 @@ void CompareNCCDistinctBM(int flowSize){
 		fp << t10NCCError / r << " ";
 		cout << "the RE of 10: " << t10NCCError / r << " " << endl;
 
-		fp << t20NCCError / r << endl;
+		fp << t20NCCError / r << " ";
 		cout << "the RE of 20: " << t20NCCError / r << " " << endl;
+
+		fp << tONCCError / r << endl;
+		cout << "the RE of O: " << tONCCError / r << " " << endl;
 	}
 }
 
+void CompareNCCDistinctBM(int flowSize){
+	double now = 0;
+	vector<pair<uint32_t, double>> flow;
+	InitDataSet(flow, flowSize);
+
+	for (int size = Size / 32; size <= Size / 16; size += Size / 256){
+		T_8bit t_5NCC(8, 1, Interval, size, 4, hashes);
+		T_8bit t_10NCC(8, 1, Interval, size, 6, hashes);
+		T_8bit t_20NCC(8, 1, Interval, size, 8, hashes);
+		T_8bit t_ONCC(8, 1, Interval, size, 16, hashes);
+		set<uint32_t> unique;
+		int r = 0;
+		double t5NCCError = 0, t10NCCError = 0, t20NCCError = 0, tONCCError = 0;
+		int gap = flow.size() / 8;
+		gap = (gap / int(Interval * 10 / pow(2, BitLength - 1))) * int(Interval * 10 / pow(2, BitLength - 1));
+		cout << "test every " << gap << " insertion" << endl;
+		for (int i = 0; i < flow.size(); i++)
+		{
+			now = double(i) / 10;
+			t_5NCC.insert(flow[i].first, now);
+			t_10NCC.insert(flow[i].first, now);
+			t_20NCC.insert(flow[i].first, now);
+			t_ONCC.insert(flow[i].first, now);
+			if ((i + 1) % int(Interval * 10) == 0)
+				for (int j = 0; j < t_ONCC.size; j ++)
+					t_ONCC.CheckAndClear(j, now, 1);
+			if ((i + 1) % gap == 0){
+				for (int j = 0; j < t_ONCC.size; j ++)
+					t_ONCC.CheckAndClear(j, now, 1);
+				r++;
+				unique.clear();
+				for (int j = i; j > max(0, i - int(Interval * 10)); j--)
+					unique.insert(flow[j].first);
+				cout << unique.size() << " distinct items in recent " << Interval * 10 << " items" << endl;
+				cout << "r: " << r << endl;
+				t5NCCError += abs(double(unique.size()) - double(t_5NCC.countflow(now))) / (unique.size() * 1.0);
+				cout << "5: " << abs(double(unique.size()) - double(t_5NCC.countflow(now))) << endl;
+				t10NCCError += abs(double(unique.size()) - double(t_10NCC.countflow(now))) / (unique.size() * 1.0);
+				cout << "10: " << abs(double(unique.size()) - double(t_10NCC.countflow(now))) << endl;
+				t20NCCError += abs(double(unique.size()) - double(t_20NCC.countflow(now))) / (unique.size() * 1.0);
+				cout << "20: " << abs(double(unique.size()) - double(t_20NCC.countflow(now))) << endl;
+				tONCCError += abs(double(unique.size()) - double(t_ONCC.countflow(now))) / (unique.size() * 1.0);
+				//cout << "O: " << abs(double(unique.size()) - double(t_ONCC.countflow(now))) << endl;
+			}
+		}
+		cout << "average of " << r << " times" << endl;
+
+		fp << t5NCCError / r << " ";
+		cout << "the RE of 5: " << t5NCCError / r << " " << endl;
+
+		fp << t10NCCError / r << " ";
+		cout << "the RE of 10: " << t10NCCError / r << " " << endl;
+
+		fp << t20NCCError / r << " ";
+		cout << "the RE of 20: " << t20NCCError / r << " " << endl;
+
+		fp << tONCCError / r << endl;
+		cout << "the RE of O: " << tONCCError / r << " " << endl;
+	}
+}
 
 void CompareHash(int flowSize, int querySize){
 	double now = 0;
@@ -1504,9 +1523,9 @@ void CompareHash(int flowSize, int querySize){
 	InitDataSet(flow, flowSize);
 
 	for (int h = 2; h <= 16; h+= 2){
-		T_8bit t_64K(8, h, Interval, Size / 2, 4, hashes);
-		T_8bit t_128K(8, h, Interval, Size, 4, hashes);
-		T_8bit t_96K(8, h, Interval, Size * 3 / 4, 4, hashes);
+		T_8bit t_64K(8, h, Interval, Size / 2, 8, hashes);
+		T_8bit t_128K(8, h, Interval, Size, 8, hashes);
+		T_8bit t_96K(8, h, Interval, Size * 3 / 4, 8, hashes);
 		set<uint32_t> unique;
 		double fal, neg, pos;
 		double t_64KFPR = 0, t_128KFPR = 0, t_96KFPR = 0;
@@ -1581,46 +1600,45 @@ void CompareHashDistinct(int flowSize){
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
 
-	for (int interv = Interval; interv <= (2 * Interval); interv += (Interval / 4)){
-		cout << "interv: " << interv << endl;
-		T_8bit t_4h(8, HashNum/2, interv, Size/2, 64, hashes);
-		T_8bit t_6h(8, HashNum*3/4, interv, Size/2, 64, hashes);
-		T_8bit t_8h(8, HashNum, interv, Size/2, 64, hashes);
+	for (int h = 2; h <= 16; h += 2){
+		T_8bit t_64K(8, h, Interval, Size / 2, 8, hashes);
+		T_8bit t_128K(8, h, Interval, Size, 8, hashes);
+		T_8bit t_96K(8, h, Interval, Size * 3 / 4, 8, hashes);
 		set<uint32_t> unique;
 		int r = 0;
-		double t4hError = 0, t6hError = 0, t8hError = 0;
+		double t_64KError = 0, t_128KError = 0, t_96KError = 0;
 		int gap = flow.size() / 8;
-		gap = (gap / int(interv * 10 / pow(2, BitLength - 1))) * int(interv * 10 / pow(2, BitLength - 1));
+		gap = (gap / int(Interval * 10 / pow(2, BitLength - 1))) * int(Interval * 10 / pow(2, BitLength - 1));
 		cout << "test every " << gap << " insertion" << endl;
 		for (int i = 0; i < flow.size(); i++)
 		{
 			now = double(i) / 10;
-			t_4h.insert(flow[i].first, now);
-			t_6h.insert(flow[i].first, now);
-			t_8h.insert(flow[i].first, now);
+			t_64K.insert(flow[i].first, now);
+			t_128K.insert(flow[i].first, now);
+			t_96K.insert(flow[i].first, now);
 			
 			if ((i + 1) % gap == 0){
 				r++;
 				unique.clear();
-				for (int j = i; j > max(0,i - interv * 10); j--)
+				for (int j = i; j > max(0, i - int(Interval * 10)); j--)
 					unique.insert(flow[j].first);
-				cout << unique.size() << " distinct items in recent " << interv * 10 << " items" << endl;
+				cout << unique.size() << " distinct items in recent " << Interval * 10 << " items" << endl;
 
-				t4hError += (abs(double(unique.size()) - double(t_4h.getDistinctItems(now))) / (unique.size() * 1.0));
-				t6hError += (abs(double(unique.size()) - double(t_6h.getDistinctItems(now))) / (unique.size() * 1.0));
-				t8hError += (abs(double(unique.size()) - double(t_8h.getDistinctItems(now))) / (unique.size() * 1.0));
+				t_64KError += (abs(double(unique.size()) - double(t_64K.getDistinctItems(now))) / (unique.size() * 1.0));
+				t_96KError += (abs(double(unique.size()) - double(t_96K.getDistinctItems(now))) / (unique.size() * 1.0));
+				t_128KError += (abs(double(unique.size()) - double(t_128K.getDistinctItems(now))) / (unique.size() * 1.0));
 			}
 		}
 		cout << "average of " << r << " times" << endl;
 
-		fp << t4hError / r << " ";
-		cout << "the RE of 4: " << t4hError / r << " " << endl;
+		fp << t_64KError / r << " ";
+		cout << "the RE of 64: " << t_64KError / r << " " << endl;
 
-		fp << t6hError / r << " ";
-		cout << "the RE of 6: " << t6hError / r << " " << endl;
+		fp << t_96KError / r << " ";
+		cout << "the RE of 96: " << t_96KError / r << " " << endl;
 
-		fp << t8hError / r << endl;
-		cout << "the RE of 8: " << t8hError / r << " " << endl;
+		fp << t_128KError / r << endl;
+		cout << "the RE of 128: " << t_128KError / r << " " << endl;
 	}
 }
 
@@ -1630,9 +1648,9 @@ void CompareSpeedWithOther(int flowSize, int querySize){
 	double duration;
 	vector<pair<uint32_t, double>> flow;
 	InitDataSet(flow, flowSize);
-	T_8bit t_8bit(8, HashNum, Interval, Size, 64, hashes);
-	Swamp swamp(HashNum, Interval, Size, hashes);
-	TBF tbf(HashNum, Interval, Size, hashes);
+	T_8bit t_8bit(8, HashNum, Interval/2, Size, 4, hashes);
+	Swamp swamp(HashNum, Interval/2, Size, hashes);
+	TBF tbf(HashNum, Interval/2, Size, hashes);
 	
 	start = clock();
 	for (int i = 0; i < flow.size(); i++)
@@ -1859,12 +1877,12 @@ int main(){
 	//CompareBits(120000, QueryNum);
 	//CompareBitsDistinct(120000);
 	//CompareBitsDistinctBM(120000);
-	CompareNCC(240000, QueryNum);
+	//CompareNCC(240000, QueryNum);
 	//CompareNCCDistinct(1200000);
 	//CompareNCCDistinctBM(1200000);
 	//CompareHash(120000, QueryNum);
 	//CompareHashDistinct(120000);
-	//CompareSpeedWithOther(100000, QueryNum);
+	CompareSpeedWithOther(100000, QueryNum);
 	//CompareDistinctSpeedWithOther(100000, QueryNum * 10);
 	system("pause");
 }

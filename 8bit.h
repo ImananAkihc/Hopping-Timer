@@ -87,11 +87,11 @@ public:
 	{
 		int label = unsigned int(time / t) % cells;
 		int min = cells;
-		for (int i = 0; i<hashnum; i++)
+		for (int i = 0; i < hashnum; i++)
 		{
 			uint32_t s = hash[i].run((char*)&id, sizeof(uint32_t)) % size;
 			//cout << "insert hash " << i << " result " << s << endl;
-			if (min == cells)
+			/*if (min == cells)
 				min = timestamp[s];
 			else if (!CheckSameWindow(timestamp[s], label))
 				min = -1;
@@ -100,12 +100,12 @@ public:
 				int newgap = (label + cells - timestamp[s]) % cells;
 				if (newgap > oldgap && min != -1)
 					min = timestamp[s];
-			}
+			}*/
 			timestamp[s] = label;
 			CheckAndClear(s, time, 1);
 		}
 		//cout << hashnum << ": min " << min << " label " << label << endl;
-		int begin, end;
+		/*int begin, end;
 		begin = label;
 		end = (label + HALF) % cells;
 		if (CheckSameWindow(min, label)){
@@ -122,7 +122,7 @@ public:
 		//cout << "+" << cnt << endl;
 		for (int i = 1; i < HALF; i++){
 			counters[((label + cells) - i) % cells] = 0;
-		}
+		}*/
 	}
 
 	int countflow(double time)
@@ -132,6 +132,7 @@ public:
 			if (!CheckAndClear(i, time, 0))
 				empty++;
 		}
+		//cout << "empty: " << empty << " size: " << size << endl;
 		return int(-log(double(empty) / size) * size);
 	}
 
