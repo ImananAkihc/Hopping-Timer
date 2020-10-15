@@ -2,7 +2,7 @@
 
 Hopping-Timer: a generic framework for basic estimation of data streams in hopping windows.
 
-Codes of Hopping-Timer are contained in 8bit.h and 8bit.c
+Codes of Hopping-Timer are contained in 8bit.h
 
 This repostory contains all the codes related to the manuscript submitted to ICDE2021.
 
